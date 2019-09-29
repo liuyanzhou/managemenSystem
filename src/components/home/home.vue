@@ -16,7 +16,7 @@
           </el-col>
           <el-col :span="4">
             <div class="grid-content bg-purple">
-              <a href="#" class="home-loginOut">退出</a>
+              <a href="#" class="home-loginOut" @click.prevent="loginOut">退出</a>
             </div>
           </el-col>
         </el-row>
@@ -116,6 +116,16 @@
              // 没有就跳到login
                 this.$router.push({name:'login'})
             }
+        },
+        methods:{
+            loginOut(){
+                // 清除token的登录标识
+               localStorage.clear()
+              //    转发
+               this.$router.push({name:'login'})
+               //    提醒
+            this.$message.success('退出成功!');    
+            }
         }
     }
 
@@ -139,6 +149,7 @@
   display: block;
   line-height: 60px;
   text-align: center;
+  text-decoration: none;
 }
 
 .container .home-slide {

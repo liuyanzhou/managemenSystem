@@ -59,3 +59,8 @@ myhttpServer.install = function (Vue, options) {
 > 1.当登录成功的时候就往locaStrage里存入token的值
 > 2.在home组件的beforecreate的函数中获取locastrage的token值 
 > 3.判断这个token值是否存在 没有就跳转到login组件
+
+## 10.做了退出功能的业务逻辑
+> 1.清除localStorage的记录
+> 2.跳转到登录组件
+> 3.提示
