@@ -31,8 +31,14 @@ export default {
             // 1.发送登录请求
             const data = res.data
             const {meta:{status,msg}} = data
+            const {token} = data.data
             if(status ===200) {
+            
+            // 如果登录成功就存入tokenlocaStrog
+            localStorage.setItem('token',token)
+
             // 2，如果成功就跳转到home组件中
+
             this.$router.push({name:'home'})
 
             // 3.提示

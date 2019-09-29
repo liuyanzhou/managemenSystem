@@ -10,7 +10,7 @@ import home from '@/components/home/home'
 export default new Router({
   routes: [
       { path:'/', component:home, name:'home' },
-      { path:'/login',component:login}
+      { path:'/login',component:login, name:'login'}
      
   ]
 })

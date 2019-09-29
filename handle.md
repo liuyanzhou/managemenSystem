@@ -54,3 +54,8 @@ myhttpServer.install = function (Vue, options) {
 > 2.使用layout布局给头部写好内容
 > 3.在slide中 使用meau菜单导航组件
 > 4.改装meau组件为所要的组件的样子
+
+## 9.做了登录的剩下的逻辑业务
+> 1.当登录成功的时候就往locaStrage里存入token的值
+> 2.在home组件的beforecreate的函数中获取locastrage的token值 
+> 3.判断这个token值是否存在 没有就跳转到login组件

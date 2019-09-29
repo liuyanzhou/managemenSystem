@@ -25,7 +25,7 @@
       <el-container>
         <el-aside width="200px" class="home-slide">
           <el-menu
-          unique-opened="true"
+          :unique-opened="true"
            default-active="2" class="el-menu-vertical-demo">
             <!-- 1 -->
             <el-submenu index="1">
@@ -107,7 +107,19 @@
   </div>
 </template>
 
-<script></script>
+<script>
+    export default {
+        beforeCreate(){
+            // 取token
+            const token = localStorage.getItem('token')
+            if(!token){
+             // 没有就跳到login
+                this.$router.push({name:'login'})
+            }
+        }
+    }
+
+</script>
 
 <style>
 .container,
