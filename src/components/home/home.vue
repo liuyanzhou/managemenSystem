@@ -26,6 +26,7 @@
         <el-aside width="200px" class="home-slide">
           <el-menu
           :unique-opened="true"
+          :router="true"
            default-active="2" class="el-menu-vertical-demo">
             <!-- 1 -->
             <el-submenu index="1">
@@ -33,7 +34,7 @@
                 <i class="el-icon-location"></i>
                 <span>用户管理</span>
               </template>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>用户列表</span>
               </el-menu-item>
@@ -101,7 +102,9 @@
             </el-submenu>
           </el-menu>
         </el-aside>
-        <el-main class="home-main">Main</el-main>
+        <el-main class="home-main">
+            <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>

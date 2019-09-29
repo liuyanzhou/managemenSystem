@@ -64,3 +64,17 @@ myhttpServer.install = function (Vue, options) {
 > 1.清除localStorage的记录
 > 2.跳转到登录组件
 > 3.提示
+
+## 11.合并dev-login分支
+> 1.先git commit -m 描述
+> 2.切换到master主分直上  git checkout master
+> 3.合并分枝 git merge dev-login
+> 4.最后由主枝push到github
+
+## 12.新建dev-user
+  1.git checkout -b dev-user
+  
+## 13.开启导航菜单的router功能 
+>  1.在:router="true"
+>  2. 修改index的值 此时这里的index的值就router文件的path的值 
+   注意: 在index的值可以加'/'也可以不加'/' vue会处理
