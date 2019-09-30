@@ -13,12 +13,18 @@ import $http from '@/plugins/http'
 // element的css
 import './assets/css/base.css'
 import 'element-ui/lib/theme-chalk/index.css'
+import moment from 'moment'
 
 Vue.config.productionTip = false
 
 // 使用
 Vue.use(ElementUI)
 Vue.use($http)
+
+// 全局过滤器
+Vue.filter('fmtDate',(value)=>{
+  return moment(value).format('YYYY-MM-DD hh:ss:mm')
+} )
 
 /* eslint-disable no-new */
 new Vue({

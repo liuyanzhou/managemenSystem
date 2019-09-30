@@ -23,7 +23,7 @@
       </el-header>
       <!-- 左划菜单 -->
       <el-container>
-        <el-aside width="200px" class="home-slide">
+        <el-aside width="200px"  class="home-slide">
           <el-menu
           :unique-opened="true"
           :router="true"
@@ -45,11 +45,11 @@
                 <i class="el-icon-location"></i>
                 <span>权限管理</span>
               </template>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>角色列表</span>
               </el-menu-item>
-              <el-menu-item index="1-2">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>权限列表</span>
               </el-menu-item>
@@ -60,22 +60,19 @@
                 <i class="el-icon-location"></i>
                 <span>商品管理</span>
               </template>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>商品列表</span>
               </el-menu-item>
-                <el-menu-item index="1-1">
+                <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>分类参数</span>
               </el-menu-item>
-                <el-menu-item index="1-1">
+                <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>商品分类</span>
               </el-menu-item>
-              <el-menu-item index="1-2">
-                <i class="el-icon-s-order"></i>
-                <span></span>
-              </el-menu-item>
+      
             </el-submenu>
             <!-- 4 -->
             <el-submenu index="4">
@@ -83,7 +80,7 @@
                 <i class="el-icon-location"></i>
                 <span>订单管理</span>
               </template>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>订单列表</span>
               </el-menu-item>
@@ -94,7 +91,7 @@
                 <i class="el-icon-location"></i>
                 <span>数据统计</span>
               </template>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-s-order"></i>
                 <span>数据报表</span>
               </el-menu-item>
@@ -156,7 +153,8 @@
 }
 
 .container .home-slide {
-  background-color: #d3dce6;
+  background-color: #fff;
+  height: 100%;
 }
 
 .container .home-main {
