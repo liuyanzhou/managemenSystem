@@ -89,9 +89,9 @@ myhttpServer.install = function (Vue, options) {
 
 ### 项目第二天
 
-####　往user的vue中加入了面包屑和搜索按钮和表格和分页组件
+####　1.往user的vue中加入了面包屑和搜索按钮和表格和分页组件
 
-#### 渲染表格的内容
+#### 2，渲染表格的内容
 1. 发现表格多的数据是用 :data 绑定数据源的 用prop="数据的名称" 来做渲染的 
 2. 发现时间的格式有问题 在main.js中使用mount的插件来定义时间格式化的过滤器
   2.1 发现如果要使用时间格式化的过滤器 那么就要加template的标签 例如 使用slot-scope 传入数据的源头 其实slot-scope会自动
@@ -104,4 +104,76 @@ myhttpServer.install = function (Vue, options) {
       </el-table-column>
 ```
 
-#### 导入状态的开关和操作的按钮
+#### 3.导入状态的开关和操作的按钮
+
+#### 4.给页面注册属性 @size-change="handleSizeChange"  @current-change="handleSizeChange"
+其中 @size-change 是每页显示的条数改变的时候触发
+    @current-change 是点击页数改变的时候触发
+      :current-page 是显示当前的第几页数
+       :page-sizes  是控制一页显示数的多少条的数据组
+       :page-size  控制一页显示多少条  
+
+在handleSizeChange与 handleSizeChange的函数中要写入发出请求的函数的条件 重新获取数据
+
+#### 5.添加用户的对话框
+```html
+  <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="密码" label-width="100px">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="邮箱" label-width="100px">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="电话" label-width="100px">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureAdd">确 定</el-button>
+      </div>
+    </el-dialog>
+```
+> 注意: 修改其中的值与下面将对话框对应的值清空的js代码(使用 forin 快速生成 其中 this.form.hasOwnProperty(key) 涉及到原型的概念 它是在问这个实例对象是否有这些key)
+```js
+  for (const key in this.form) {
+        if (this.form.hasOwnProperty(key)) {
+          this.form[key]=  ''   
+        }
+      }
+```
+
+#### 6.点击删除用户
+1.给界面添加comfire的代码判断
+```js
+     this.$confirm("确定删除改用户吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+        const res  = await this.$http.delete(`users/${id}`)
+        const {meta:{msg,status}} =  res.data
+        if(status===200){
+          this.pagenum= 1
+          this.getList()
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })         
+        }        
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        }); 
+```
+> 注意: 其中的.then是处理成功的处理函数 .catch 是处理取消的处理函数
