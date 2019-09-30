@@ -44,7 +44,7 @@
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button size="mini" plain type="primary" icon="el-icon-edit" @click="editUser(scope.row.id)" circle></el-button>
           <el-button
             size="mini"
             plain
@@ -73,7 +73,7 @@
     <!-- 对话框 -->
     <!-- 添加用户 -->
 
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
       <el-form :model="form">
         <el-form-item label="用户名" label-width="100px">
           <el-input v-model="form.username" autocomplete="off"></el-input>
@@ -96,11 +96,37 @@
         <el-button type="primary" @click="sureAdd">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 编辑用户 -->
+
+    <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="密码" label-width="100px">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="邮箱" label-width="100px">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="电话" label-width="100px">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUser">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
-import { async } from 'q';
+import { async } from "q";
 export default {
   data() {
     return {
@@ -117,7 +143,8 @@ export default {
         email: "",
         mobile: ""
       },
-      dialogFormVisible: false
+      dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit:false
     };
   },
   created() {
@@ -181,11 +208,11 @@ export default {
     },
     // 点击添加用户按钮显示对话框的处理函数
     Adduser() {
-      this.dialogFormVisible = true;
+      this.dialogFormVisibleAdd = true;
     },
     // 添加用户里面的确定按钮 发送添加
     sureAdd() {
-      this.dialogFormVisible = false;
+      this.dialogFormVisibleAdd = false;
       this.$http.post("users", this.form).then(res => {
         // console.log(res)
         const {
@@ -200,12 +227,11 @@ export default {
         }
 
         // 将添加用户的对话框的信息清空
-      for (const key in this.form) {
-        if (this.form.hasOwnProperty(key)) {
-          this.form[key]=  ''   
+        for (const key in this.form) {
+          if (this.form.hasOwnProperty(key)) {
+            this.form[key] = "";
+          }
         }
-      }
-       
       });
     },
     // 删除用户处理函数
@@ -216,23 +242,34 @@ export default {
         type: "warning"
       })
         .then(async () => {
-        const res  = await this.$http.delete(`users/${id}`)
-        const {meta:{msg,status}} =  res.data
-        if(status===200){
-          this.pagenum= 1
-          this.getList()
+          const res = await this.$http.delete(`users/${id}`);
+          const {
+            meta: { msg, status }
+          } = res.data;
+          if (status === 200) {
+            this.pagenum = 1;
+            this.getList();
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+          }
+        })
+        .catch(() => {
           this.$message({
-            type: 'success',
-            message: '删除成功'
-          })         
-        }        
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+            type: "info",
+            message: "已取消删除"
+          });
         });
-
+    },
+     async editUser(id) {
+      this.dialogFormVisibleEdit =true
+      
+     const res = await this.$http.get(`users/${id}`)
+     this.form = res
+     console.log(res)
+     console.log('1')
+      
     }
   }
 };

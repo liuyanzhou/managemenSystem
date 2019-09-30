@@ -177,3 +177,5 @@ myhttpServer.install = function (Vue, options) {
         }); 
 ```
 > 注意: 其中的.then是处理成功的处理函数 .catch 是处理取消的处理函数
+
+#### 7.添加了编辑的界面
