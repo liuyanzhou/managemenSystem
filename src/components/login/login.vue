@@ -25,8 +25,10 @@ export default {
   },
   methods:{
     //   登录功能的函数
-      loginTo(){
-        this.$http.post('login',this.formData).then((res) => {
+      async loginTo(){
+          // es6写法
+        // 使用async 和 await的es6写法
+        const res = await this.$http.post('login',this.formData)
             console.log(res)
             // 1.发送登录请求
             const data = res.data
@@ -47,7 +49,40 @@ export default {
             }else {
               this.$$message.error(msg)
             }
-        })
+
+
+
+
+
+
+
+
+
+
+
+        // 常规写法
+        // this.$http.post('login',this.formData).then((res) => {
+        //     console.log(res)
+        //     // 1.发送登录请求
+        //     const data = res.data
+        //     const {meta:{status,msg}} = data
+        //     const {token} = data.data
+        //     if(status ===200) {
+            
+        //     // 如果登录成功就存入tokenlocaStrog
+        //     localStorage.setItem('token',token)
+
+        //     // 2，如果成功就跳转到home组件中
+
+        //     this.$router.push({name:'home'})
+
+        //     // 3.提示
+        //       this.$message.success(msg)
+              
+        //     }else {
+        //       this.$$message.error(msg)
+        //     }
+        // })
       }
   }
 };
