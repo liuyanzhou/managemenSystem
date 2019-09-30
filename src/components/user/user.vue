@@ -20,18 +20,30 @@
     </el-row>
     <!-- 表格 -->
     <el-table :data="list" style="width: 100%" class="home-table">
-      <el-table-column label="#" width="100"  type="index"></el-table-column>
+      <el-table-column label="#" width="100" type="index"></el-table-column>
       <el-table-column label="姓名" width="100" prop="username"></el-table-column>
       <el-table-column label="邮箱" width="180" prop="email"></el-table-column>
       <el-table-column label="电话" width="200" prop="mobile"></el-table-column>
-      <el-table-column label="创建日期" >
-          <template slot-scope="list">
-              {{ list.row.create_time | fmtDate }}
-          </template>
+      <el-table-column label="创建日期">
+        <template slot-scope="list">{{ list.row.create_time | fmtDate }}</template>
       </el-table-column>
-      <el-table-column label="用户状态" prop="mg_state"></el-table-column>
+      <el-table-column label="用户状态" prop="mg_state" width="150">
+        <el-switch
+          slot-scope="scope"
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+        ></el-switch>
+      </el-table-column>
 
-      <el-table-column label="操作" width="180"></el-table-column>
+      <el-table-column label="操作" >
+        <template slot-scope="scope">
+          <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
+         <el-button size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
+          <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
@@ -70,8 +82,8 @@ export default {
           const {
             data,
             meta: { msg, status }
-          } = res.data          
-            const users = data.users
+          } = res.data;
+          const users = data.users;
 
           if (status === 200) {
             //  this.list=data
@@ -83,10 +95,10 @@ export default {
             // role_name: "主管";
             // username: "admin";
 
-            this.list=users
-             this.$message.success(msg)
+            this.list = users;
+            this.$message.success(msg);
           } else {
-             this.$message.warming(msg)
+            this.$message.warming(msg);
           }
         });
     }
