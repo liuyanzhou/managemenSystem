@@ -78,3 +78,7 @@ myhttpServer.install = function (Vue, options) {
 >  1.在:router="true"
 >  2. 修改index的值 此时这里的index的值就router文件的path的值 
    注意: 在index的值可以加'/'也可以不加'/' vue会处理
+
+## 14. 在login组件中使用了es6的写法  
+>   1. 在函数的前面加上asnyc  在异步操作的前面加上await  
+>   2. 这个操作是等await后面的函数执行完才会执行下一步操作
