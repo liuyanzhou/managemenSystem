@@ -33,18 +33,26 @@
       <el-table-column label="创建日期">
         <template slot-scope="list">{{ list.row.create_time | fmtDate }}</template>
       </el-table-column>
-      <el-table-column label="用户状态" prop="mg_state" width="150">
+      <el-table-column label="用户状态" width="150">
         <el-switch
           slot-scope="scope"
           v-model="scope.row.mg_state"
           active-color="#13ce66"
           inactive-color="#ff4949"
+          @change="handleStatus(scope.row)"
         ></el-switch>
       </el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit" @click="editUser(scope.row.id)" circle></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-edit"
+            @click="showEditUser(scope.row.id)"
+            circle
+          ></el-button>
           <el-button
             size="mini"
             plain
@@ -53,7 +61,12 @@
             circle
             @click="deleteUser(scope.row.id)"
           ></el-button>
-          <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+          <el-button
+           size="mini" 
+           plain type="success" 
+           icon="el-icon-check" 
+           @click="editRol(scope.row.id)"
+           circle></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -99,14 +112,10 @@
 
     <!-- 编辑用户 -->
 
-    <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit">
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
       <el-form :model="form">
         <el-form-item label="用户名" label-width="100px">
-          <el-input v-model="form.username" autocomplete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item label="密码" label-width="100px">
-          <el-input v-model="form.password" autocomplete="off"></el-input>
+          <el-input disabled v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
 
         <el-form-item label="邮箱" label-width="100px">
@@ -118,8 +127,32 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleEditRol">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          {{currentRolUsername}}
+        </el-form-item>
+        <el-form-item label="角色" label-width="100px">
+          <el-select v-model="currentRol" >
+            <el-option label="请选择" :value="-1" disabled></el-option>
+            <el-option
+             v-for="(item,i) in roleList" 
+             :key="i"  
+             :label="item.roleName" 
+             :value="item.id">
+             </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEditRol = false">取 消</el-button>
+        <el-button type="primary" @click="roleEdit">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -130,21 +163,39 @@ import { async } from "q";
 export default {
   data() {
     return {
+      // 获取搜索框的内容
       inputVal: "",
+      // 获取表格数据
       list: [],
+      // 设置发送获取用户信息的值
       query: "",
+      // 这是设置获取用户数据的页数
       pagenum: 1,
+      // 这是设置获取一页页数展示的数量的个数的默认值
       pagesize: 2,
+      // 这是设置获取到用户总共数据的默认值
       total: -1,
-      // 这是添加用户的对话框
+      // 这是添加用户的对话框的信息
       form: {
         username: "",
         password: "",
         email: "",
         mobile: ""
       },
+      // 设置打开添加用户的对话框默认不打开
       dialogFormVisibleAdd: false,
-      dialogFormVisibleEdit:false
+      // 设置打开编辑用户的对话框默认不打开
+      dialogFormVisibleEdit: false,
+      // 设置编辑的时候获取到的当前用户的默认id值
+      currentId: -1,
+      // 设置打开分配角色的对话框默认不打开
+      dialogFormVisibleEditRol: false,
+      // 设置分配角色的el-select 中的v-model
+      currentRol: -1,
+      // 设置角色编辑的名字
+      currentRolUsername:'',
+      // 角色的列表
+      roleList:[]
     };
   },
   created() {
@@ -175,6 +226,7 @@ export default {
             // role_name: "主管";
             // username: "admin";
 
+            // 在这里我将存取用户所有信息的数据交给list让它去渲染用户界面的信息
             this.list = users;
             this.total = total;
             // this.$message.success(msg);
@@ -208,6 +260,13 @@ export default {
     },
     // 点击添加用户按钮显示对话框的处理函数
     Adduser() {
+      // 点开的时候先清除所有的this.form的信息(因为先点编辑在点添加的时候 this.form 里面会有点击编辑的时候存在的数据)
+      for (const key in this.form) {
+        if (this.form.hasOwnProperty(key)) {
+          this.form[key] = "";
+        }
+      }
+
       this.dialogFormVisibleAdd = true;
     },
     // 添加用户里面的确定按钮 发送添加
@@ -262,16 +321,64 @@ export default {
           });
         });
     },
-     async editUser(id) {
-      this.dialogFormVisibleEdit =true
-      
-     const res = await this.$http.get(`users/${id}`)
-     this.form = res
-     console.log(res)
-     console.log('1')
-      
+    // 点开编辑按钮 - 显示
+    async showEditUser(id) {
+      this.dialogFormVisibleEdit = true;
+      this.currentId = id;
+
+      const res = await this.$http.get(`users/${id}`);
+      this.form = res.data.data;
+    },
+    // 编辑 - 修改
+    async editUser() {
+      const res = await this.$http.put(`users/${this.currentId}`, this.form);
+      const {
+        meta: { msg, status }
+      } = res.data;
+      if (status === 200) {
+        this.$message.success("更新成功!");
+        this.dialogFormVisibleEdit = false;
+      }
+    },
+    // 改变用户状态
+    async handleStatus(user) {
+      const res = await this.$http.put(
+        `users/${user.id}/state/${user.mg_state}`
+      );
+      const {
+        meta: { msg, status }
+      } = res.data;
+      if (status === 200) {
+        this.$message.success("用户状态成功!");
+      }
+    },
+    // 显示分配角色的页面
+    async editRol(id){
+      this.dialogFormVisibleEditRol = true
+
+      //获取角色数据
+      const res = await this.$http.get('roles')
+      this.roleList = res.data.data
+      const res1 = await this.$http.get(`users/${id}`)
+      this.currentRol = res1.data.data.rid
+      this.currentRolUsername= res1.data.data.username
+     this.currentRolId = res1.data.data.id
+
+
+    },
+    // 编辑角色数据
+    async roleEdit(){
+       const res = await this.$http.put(`users/${this.currentRolId}/role`,{
+         rid:this.currentRol
+       })
+       const {meta:{msg,status}} = res.data
+       if(status===200) {
+         this.$message.success('角色权限更新成功!')
+         this.dialogFormVisibleEditRol =false
+       } 
     }
-  }
+
+   }
 };
 </script>
 

@@ -179,3 +179,66 @@ myhttpServer.install = function (Vue, options) {
 > 注意: 其中的.then是处理成功的处理函数 .catch 是处理取消的处理函数
 
 #### 7.添加了编辑的界面
+
+
+
+###  项目第三天
+
+#### 1.显示编辑的数据
+1.先通过接口users/:id 查询到编辑数据必要的信息
+2.将信息显示到界面上(由于和添加用户的信息是同一个结构 所以 可以使用同一个data中绑定的数据)
+3.在给确定的按钮添加提交事件(组件原生就有)
+> 注意: 测试的时候由于先点编辑后点添加用户(由于使用同一个data的绑定数据就会导致编辑的数据滞留)所以在显示添加哟过户组件的时候必须清空data中绑定的数据
+
+#### 2.改变用户状态
+1. 从组件的switch发现 组件有一个change事件(是当switch 状态发生变化时的回调函数) 
+> 注意: 当switch组件中v-model绑定了什么 change事件就改变什么(布尔值)
+```html
+       <el-switch
+          slot-scope="scope"
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          @change="handleStatus(scope.row)"
+        ></el-switch>
+```
+2.在change绑定的事件中发送请求就ok了users/:uId/state/:type
+
+#### 3.分配角色
+1.先画好分配角色的模版
+2.通过接口users/:id获取到用户的username显示到组件中的用户名 
+> 注意: {{ data中的数据 }} 这种格式是支持的 而this.data的数据是在exprot default的其他数据中使用data数据时使用
+> 注意:如果要在el中写入其他的html的标签　那么必须使用<template>包裹着 从外面传来的值也必须使用slot-scop="scop"来绑定
+3.通过接口role 获取到所有的角色列表 将其存入一个data中的数组中去 然后在v层中遍历
+```html
+ <el-dialog title="分配角色" :visible.sync="dialogFormVisibleEditRol">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          {{currentRolUsername}}
+        </el-form-item>
+        <el-form-item label="角色" label-width="100px">
+          <el-select v-model="currentRol" >
+            <el-option label="请选择" :value="-1" disabled></el-option>
+            <el-option
+             v-for="(item,i) in roleList" 
+             :key="i"  
+             :label="item.roleName" 
+             :value="item.id">
+             </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEditRol = false">取 消</el-button>
+        <el-button type="primary" @click="roleEdit">确 定</el-button>
+      </div>
+    </el-dialog>
+```
+> 注意: 在遍历的时候要写入到组件的数据必须使用" : "来绑定属性 如上的:label="item.roleName"  :value="item.id"
+>注意: 在el-select 和 el-option 有一个特性 当el-select上的v-model绑定的值和el-option撒谎那个的value如果是一样的话 el-select上面就会显示el-option的label值(原生的select和option也是这样子的属性)
+4.通过接口"users/:id" 来获取到当前用户的角色 在渲染到v层中 在件其获得rid放到el-select上的v-model绑定的值上
+
+#### 4.分配角色的编辑
+1.由接口"users/:id/role"可知需要用户id和修改的rid 
+2.获取到id 和 rid(其实都在上面的操作中加入了data中)
+3.发送成功
