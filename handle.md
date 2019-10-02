@@ -208,7 +208,7 @@ myhttpServer.install = function (Vue, options) {
 1.先画好分配角色的模版
 2.通过接口users/:id获取到用户的username显示到组件中的用户名 
 > 注意: {{ data中的数据 }} 这种格式是支持的 而this.data的数据是在exprot default的其他数据中使用data数据时使用
-> 注意:如果要在el中写入其他的html的标签　那么必须使用<template>包裹着 从外面传来的值也必须使用slot-scop="scop"来绑定
+> 注意:如果要在el中写入其他的组件的标签　那么必须使用<template>包裹着 从外面传来的值也必须使用slot-scop="scop"来绑定
 3.通过接口role 获取到所有的角色列表 将其存入一个data中的数组中去 然后在v层中遍历
 ```html
  <el-dialog title="分配角色" :visible.sync="dialogFormVisibleEditRol">
@@ -276,3 +276,34 @@ Vue.component(bread.name,bread)
 1.在components 中建立'rights'的'rightList.vue '
 2.通过接口'rights/list '获取到权限列表的信息 在data中声明一个rightList的数组
 3.将数据渲染到v层
+
+#### 8.角色列表的页面显示和数据渲染
+1.在components 中建立'rights'的'role.vue'
+2.在查阅element的文档可知道 要展开表格必须添加'type="extend"' 属性
+3.渲染行列的数据表的时候 要优先想到使用"v-for" 来渲染行列
+4.在循环中要在每次循环都要在el-row行中循环(除了最后一次循环),因为项目的循环要依靠上一次循环的数据找到当前循环所要的数据,
+但最后一次循环中就可以只在所要的循环结构中使用
+5.修改"el-tag"的样式 修改它的的type的值 在加上笑图标> 
+
+#### 9.角色列表的权限列表的对话框的展示和渲染
+1.先从element的对话框组件加入代码
+2.在添加showEditRole() 方法 点击打开界面和通过接口"rights/tree"获取到树型结构的数据
+3.在从element中获取到树节点的组件代码段 
+>注意:   data => 绑定的是展示的数据
+        show-checkbox => 是否显示选择框
+        default-expand-all => 展示所有的树节点
+        node-key="id" => 绑定每个树节点的唯一的id(来源与data绑定数据中的唯一的key名  )
+        :props = "配置的选项" =>  defaultProps:{ children: 'children',  label: 'authName' }
+        其中 children是指以data中那个数据为数据的转折树节点 而 label是指data中那个数据为显示的内容
+```html
+        <el-tree
+          :data="data"
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          ref="tree"
+          highlight-current
+          :props="defaultProps"
+        ></el-tree>
+```
+        

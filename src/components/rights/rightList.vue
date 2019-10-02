@@ -4,7 +4,7 @@
     <mybread leavel1="权限管理" leavel2="权限列表"></mybread>
 
     <!-- 列表 -->
-    <el-table :data="tableData" style="width: 100%">
+    <el-table :data="tableData" style="width: 100%" height="400px">
       <el-table-column type="index" label="#" width="180"></el-table-column>
       <el-table-column prop="authName" label="权限名称" width="120"></el-table-column>
       <el-table-column prop="path" label="路径" width="200"></el-table-column>
