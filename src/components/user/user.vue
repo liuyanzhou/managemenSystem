@@ -2,11 +2,7 @@
   <el-card class="box-card">
     <div slot="header" class="clearfix">
       <!-- 面包屑 -->
-      <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-      </el-breadcrumb>
+      <mybread leavel1="用户管理" leavel2="用户列表"></mybread> 
     </div>
 
     <!-- 搜索框 -->
@@ -204,8 +200,8 @@ export default {
   methods: {
     // 获取用户的数据
     getList() {
-      const AUTH_TOKEN = localStorage.getItem("token");
-      this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
+      // const AUTH_TOKEN = localStorage.getItem("token");
+      // this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
       this.$http
         .get(
           `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`

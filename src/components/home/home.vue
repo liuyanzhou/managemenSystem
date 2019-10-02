@@ -34,7 +34,7 @@
                 <i class="el-icon-location"></i>
                 <span>用户管理</span>
               </template>
-              <el-menu-item index="user">
+              <el-menu-item index="/user">
                 <i class="el-icon-s-order"></i>
                 <span>用户列表</span>
               </el-menu-item>
@@ -49,7 +49,7 @@
                 <i class="el-icon-s-order"></i>
                 <span>角色列表</span>
               </el-menu-item>
-              <el-menu-item index="user">
+              <el-menu-item index="/rightList">
                 <i class="el-icon-s-order"></i>
                 <span>权限列表</span>
               </el-menu-item>

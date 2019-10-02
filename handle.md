@@ -242,3 +242,37 @@ myhttpServer.install = function (Vue, options) {
 1.由接口"users/:id/role"可知需要用户id和修改的rid 
 2.获取到id 和 rid(其实都在上面的操作中加入了data中)
 3.发送成功
+
+
+#### 5.封装面包屑组件为全局组件
+1. 在组件的模块中建立common的bread.vue放入面包屑的模版
+2. 封装props:[] 里面有父组件传来的属性 
+3. 到main.js中将bread注册为全局的组件
+```js
+import bread from './components/common/bread'
+Vue.component(bread.name,bread)
+```
+
+> 注意: import 导出的是vue的'export default'对象所以组件名字可以在bread.vue中的name属性声明
+
+#### 6.全局配置axios发送请求的请求头(使用axios的拦截器)
+```js
+ axios.interceptors.request.use(function (config) {
+    
+    // 判断该请求是不是login  注意: config.url 对应的是除了baseURL 的请求路径的值
+    if(config.url !=='login'){
+      const AUTH_TOKEN = localStorage.getItem("token");
+      config.headers["Authorization"] = AUTH_TOKEN;
+    }
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+```
+
+#### 7.权限列表的数据显示
+1.在components 中建立'rights'的'rightList.vue '
+2.通过接口'rights/list '获取到权限列表的信息 在data中声明一个rightList的数组
+3.将数据渲染到v层
