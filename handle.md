@@ -307,3 +307,316 @@ Vue.component(bread.name,bread)
         ></el-tree>
 ```
         
+#### 10.角色列表的权限列表对该角色已有的权限的渲染
+1.showEditRole方法中加入遍历的数组,获取到的arr是该角色已有权限的id值在赋予default-checked-keys的tree属性
+```js
+    user.children.forEach(item1 => {
+        item1.children.forEach(item2 => {
+          item2.children.forEach(item3 => {
+            arr.push(item3.id);
+          });
+        });
+      });
+```
+> 注意: arr为什么值pushitem3的id,因为如果push前面的数据的话渲染就会全打√
+
+#### 11.对角色授予权限功能
+1.roles/:roleId/rights 接口需要当前的角色id那么就要往前面的点开显示函数中获取到id并存放在data数据中
+2.在通过tree组件的setCheckedKeys(打√的id) 和 getHalfCheckedKeys(打半√的id) 
+> 注意: setCheckedKeys() 和getHalfCheckedKeys() 方法是要像dom元素那样被触发 但是我们vue不提倡我们操作dom那么我们就得给要操作的dom加入 ref属性, 获取时用"this.$refs.ref的属性名.get方法"
+
+#### 12.处理路由守卫
+1.因为在home.vue中判断token很麻烦(可能存在和home同级的组件,到那时就要多次判断token值),为了避免麻烦我们就使用路由守卫这个技术载
+2.路由守卫时在路由配置生效前 先来到路由守卫进行判断
+3.to -> 要去的路由配置 from-> 当前路由配置 next() 让to的路由配置继续生效
+```js
+router.beforeEach((to, from, next) => {
+  console.log(to)
+  if (to.path === '/login') {
+    next()
+  } else {
+    // 取token
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // 没有就跳到login
+      router.push({ name: "login" });
+      return
+    }
+    next()
+  }
+})
+```
+
+
+### 第三天项目开发
+
+#### 1.加入goodsList的组件
+1.在components的加入goodsList组件
+2.在router的路由里配置好路由接口 goods
+
+#### 2.加入goodsAdd组件
+1.在components中加入goodsAdd的组件
+2.在router中配置号路由规则
+
+#### 3.在goodsAdd中加入步骤条和tabs标签页组件
+1.加入步骤条  
+  active => 设置当前激活步骤
+  finish-status => 设置完成的状态
+2.加入tabs标签页
+  label => 显示标题的属性
+#### 4.级联选择器
+1.标签为  "el-pagination"
+2.其中的属性
+  expand-trigger="hover" => 设置你触发是点击还是鼠标移动
+  v-model="selectOption" => 最终选择的label的value都会存放在这个位置
+  :options="options"     => 绑定的数据来源
+  :props="{ label:'label',value:'value',children:'children' }"  => 设置配置选项 label=> 标签显示的名字 value=>发送的唯一标识 children=>	指定选项的子选项为选项对象的某个属性值
+  @change="handleChange" => 节点改变的时候就触发的事件
+```html
+ <el-cascader
+  expand-trigger="hover"
+  v-model="selectOption"
+  :options="options"
+  :props="defaultprams"
+  @change="handleChange"
+></el-cascader>
+```
+
+3.从接口文档(categories?type=3)中获取到级联数据,获取到的data在赋值给data中的级联数据的options属性去渲染
+
+#### 5.如果基本信息中没有选择级联选择器就报提示
+tab-click 在tabs组件中加入该事件(点击tabs就触发的事件)
+
+#### 6.动态数据的展示与渲染
+1. 发现动态渲染的checkbox的复选框 从element找到checkbox的组件 
+
+
+2.数据接口是categories/:id/attributes?sel=many 获取动态数据 存在arrCheack
+3.渲染
+
+```html
+<el-checkbox-group v-model="item.attr_vals">
+    <el-checkbox border v-for="(item1,i) in item.attr_vals" :key="i" :label="item1"></el-checkbox>
+  </el-checkbox-group>
+```
+> el-checkbox-group 中一定要有v-model并且要保证有值(这里的值是表示哪些打√) boder是控制是否有边框
+
+#### 7.静态数据的展示和渲染
+1.从接口categories/:id/attributes?sel=only 获取到数据存在arrproduct
+2.使用表单控件来渲染数据
+```html
+<el-form-item v-for="(item,i) in arrproduct" :key="i"  :label="item.attr_name">
+    <el-input v-model="item.attr_vals"> </el-input>
+</el-form-item>
+```
+
+#### 8.上传图片
+1. 使用element的上传照片的组件
+```html
+ <el-upload
+    :headers="header"
+    class="upload-demo"
+    action="http://localhost:8888/api/private/v1/upload"
+    :on-preview="handlePreview"
+    :on-remove="handleRemove"
+    :on-success="handleSuccess"
+    list-type="picture"
+  >
+    <el-button size="small" type="primary">点击上传</el-button>
+    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+  </el-upload>
+```
+其中 header -> 是发送请求的设置请求头的属性 action->是上次照片的接口 on-preview是照片上之前的处理函数
+on-remove -> 是照片移除的处理函数 on-success -> 是照片上传成功的处理函数
+
+#### 9.富文本
+1.下载 npm install vue-quill-editor --save
+2.导入
+```js
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+```
+3.在goodsAdd组件中注册
+```js
+components: {
+    quillEditor
+  }
+```
+4.使用
+```html
+<quill-editor class="goods-editor"
+ v-model="form.goods_introduce"></quill-editor>
+```
+
+#### 10.发送添加请求
+1.处理添加的数据格式
+2. 处理attrs =>是动态参数和静态参数的集合 arrCheack 和 arrproduct
+```js
+   // 处理this.form.attr数据(动态和静态)
+       const arr1 = this.arrCheack.map(item =>{
+         return { attr_id:item.attr_id , attr_value:item.attr_vals }
+       })
+
+      // 静态
+      const arr2 = this.arrproduct.map(item =>{
+        return { attr_id:item.attr_id , attr_value: item.attr_vals}
+      })
+      
+      // 拼接
+      const arr3 = [...arr1,...arr2]
+      this.form.attrs = arr3
+```
+> 注意: 使用arr.map() 方法 会返回以return 为形式的数组
+3.处理完form的所有数据之后发送接口post请求 (goods)
+
+
+###  4.开发第四天
+
+#### 1.布局分类参数的页面和数据渲染
+1.建立路由 在router中加入 params的组件路由 
+2.画出分类参数的界面
+3.在表格的参数中动态的el-tag渲染
+4.在级联选择器的点击下获取表格的数据
+```js
+// 级联选择器点击的处理函数
+    async handleChange() {
+      // 判断点击的tabs的时候级联是否选择了没有就提示
+      if (this.selectOption.length !== 3) {
+        this.$message.warning("请选择分类级别");
+        return;
+      }
+
+      const res = await this.$http.get(
+        `categories/${this.selectOption[2]}/attributes?sel=many`
+      );
+
+      const { data } = res.data;
+
+      data.forEach(item => {
+        item.attr_vals = item.attr_vals.split(",");
+      });
+
+      this.arrCheack = data;
+    },
+```
+
+#### 2.删除参数和添加参数
+1.在点击el-tag的x函数中发送请求
+```js
+ async handleClose(scope,tag) {
+    scope.attr_vals.splice(scope.attr_vals.indexOf(tag), 1);
+    
+    // attr_name
+    // attr_sel
+    // attr_vals
+
+    const obj = {
+        attr_name:scope.attr_name,
+        attr_sel:scope.attr_sel,
+        attr_vals:scope.attr_vals.join(',')
+    }
+    // 点击x删除参数
+    const res = await this.$http.put(`categories/${this.selectOption[2]}/attributes/${scope.attr_id}`,obj)
+
+    },
+```
+2.用el-tag的添加函数来发送添加参数的请求
+```js
+  async handleInputConfirm(scope) {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        scope.attr_vals.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = "";
+
+    const obj = {
+        attr_name: scope.attr_name,
+        attr_sel:  "many",
+        attr_vals:scope.attr_vals.join(',')
+    }
+    
+
+    const res = await this.$http.put(`categories/${this.selectOption[2]}/attributes/${scope.attr_id}`, obj)
+      
+    }
+```
+
+#### 3.引入categories组件
+1.发现element的组件没有列表树的组件
+2.安装element-tree-grid插件
+ 2.1npm install element-tree-grid --save
+ 2.2  var ElTreeGrid = require('element-tree-grid'); // 导包
+      Vue.component(ElTreeGrid.name,ElTreeGrid); // 注册组件
+3. element-tree-grid 的组件要基本配置4个属性
+     treeKey 绑定到id 给每个节点设置一个唯一值
+    parentKey 绑定到父id属性 区分父子节点
+    levelKey 绑定到层级的属性
+    childKey 绑定到储存子元素的属性
+
+
+#### 4.引入order组件
+1.导入城市数据接口
+```js
+import cityData from './city_data2017_element'
+```
+
+#### 5.数据报告
+1. 路由配置 配置reports组件
+2. 报表使用的是echart插件
+先导入 
+```js
+import echarts from 'echarts'
+```
+在初始化
+```js
+export default {
+  data() {
+    return {
+        option:{}
+    };
+  },
+  mounted(){
+      this.UserEchart()
+  },
+  methods: {
+   async UserEchart() {
+      // init
+      const mychart = echarts.init(this.$refs.ecartsArea);
+
+      // option
+   const { data: { data } } = await this.$http.get(`reports/type/1`) 
+      const optionEcharts = {
+        title: {
+          text: ""
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: {
+              backgroundColor: "#6a7985"
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        }
+      };
+      this.option = { ...data, ...optionEcharts };
+
+      //use
+       mychart.setOption(this.option)
+    }
+  }
+};
+```

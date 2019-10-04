@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+
 // 导入element组件
 import ElementUI from 'element-ui'
 import $http from '@/plugins/http'
@@ -15,6 +16,9 @@ import './assets/css/base.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import bread from './components/common/bread'
 import moment from 'moment'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 
