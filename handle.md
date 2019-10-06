@@ -620,3 +620,16 @@ export default {
   }
 };
 ```
+
+
+### 总结：
+1.清楚了一些element的组件的使用
+2.知道了json-server软件的用法
+3.知道了axios的用法和配置
+4.在表格控件中要用template来关联 而且传值是用slot-scope="scope"来传值 scope.row来获取值
+5.导航守卫的配置(它是建立在像home哪样的同级下判断是否又登录标识)
+6.当个组件的封装(全局组件的使用)
+7.cookie session localStorage
+cookie 客户端存储 4k
+session 服务端存储 seesionId=>cookie (session是通过cookie存储的)
+HTML5 处理另一种(webStorage数据持久化) => localStorage sessionStorage(存储量大 5m)
